@@ -27,3 +27,19 @@ down: ## Docker container down
 
 bash: ## Launch bash in the php container
 	${DOCKER} container exec -it ${PHP_CONTAINER} bash
+
+
+## —— Install & deploy ————————————————————————————————————————————————————————————
+install: ## Install the composer dependencies from back to front
+	${COMPOSER} install
+	${CONSOLE} importmap:install
+
+compile: ## compile assets from asset mapper
+	${CONSOLE} tailwind:build --minify
+	${CONSOLE} asset-map:compile
+
+watch: ## watch for tailwind classes
+	${CONSOLE} tailwind:build --watch
+
+ts: ## watch for typescript changes
+	${CONSOLE} typescript:build --watch
