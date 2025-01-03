@@ -28,4 +28,10 @@ return [
     '@symfony/ux-live-component' => [
         'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
     ],
+    '@headlessui/tailwindcss' => [
+        'version' => '0.2.1',
+    ],
+    'tailwindcss/plugin.js' => [
+        'version' => '3.4.4',
+    ],
 ];
