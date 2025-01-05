@@ -1,0 +1,56 @@
+version: "3"
+services:
+  base:
+    container_name: base
+    build:
+      context: ./docker/base/
+      args:
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    sysctls:
+      - net.ipv4.ip_unprivileged_port_start=0
+    ports:
+      - "8080:80"
+    volumes:
+      - ../app/:/var/www
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+      - db_network
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_USER: app
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "app", "-U", "app" ]
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data:rw
+    networks:
+      - db_network
+
+  ###> symfony/mailer ###
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - 1025:1025
+      - 8025:8025
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - app_network
+  ###< symfony/mailer ###
+
+networks:
+  app_network:
+  db_network:
