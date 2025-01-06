@@ -2,7 +2,9 @@
 
 namespace App\Tests\Functional\Security;
 
+use App\DataFixtures\UserFixtures;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -10,33 +12,17 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class LoginControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
+    private UserRepository $userRepository;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
         $container = static::getContainer();
         $em = $container->get('doctrine.orm.entity_manager');
-        $userRepository = $em->getRepository(User::class);
-
-        // Remove any existing users from the test database
-        foreach ($userRepository->findAll() as $user) {
-            $em->remove($user);
-        }
-
-        $em->flush();
-
-        // Create a User fixture
-        /** @var UserPasswordHasherInterface $passwordHasher */
-        $passwordHasher = $container->get('security.user_password_hasher');
-
-        $user = (new User())->setEmail('email@example.com');
-        $user->setPassword($passwordHasher->hashPassword($user, 'password'));
-
-        $em->persist($user);
-        $em->flush();
+        $this->userRepository = $em->getRepository(User::class);
     }
 
-    public function testLogin(): void
+    public function testIncorrectEmailAddressLoginShouldNotLogin(): void
     {
         // Denied - Can't login with invalid email address.
         $this->client->request('GET', '/login');
@@ -52,7 +38,10 @@ class LoginControllerTest extends WebTestCase
 
         // Ensure we do not reveal if the user exists or not.
         self::assertSelectorTextContains('.alert-danger', 'Invalid credentials.');
+    }
 
+    public function testIncorrectPasswordLoginShouldNotLogin(): void
+    {
         // Denied - Can't login with invalid password.
         $this->client->request('GET', '/login');
         self::assertResponseIsSuccessful();
@@ -67,11 +56,21 @@ class LoginControllerTest extends WebTestCase
 
         // Ensure we do not reveal the user exists but the password is wrong.
         self::assertSelectorTextContains('.alert-danger', 'Invalid credentials.');
+    }
+
+
+    public function testCorrectCredentialsShouldLogin(): void
+    {
+        /** @var User $user */
+        $user = $this->userRepository->findAll()[0];
+
+        $this->client->request('GET', '/login');
+        self::assertResponseIsSuccessful();
 
         // Success - Login with valid credentials is allowed.
         $this->client->submitForm('Sign in', [
-            '_username' => 'email@example.com',
-            '_password' => 'password',
+            '_username' => $user->getEmail(),
+            '_password' => UserFixtures::USER_PASSWORD,
         ]);
 
         self::assertResponseRedirects('/');
