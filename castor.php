@@ -14,8 +14,8 @@ use function Castor\run;
 
 import(__DIR__ . "/.castor");
 
-#[AsContext(default: true)]
-function project_context(): Context
+#[AsContext(name: "project_context", default: true)]
+function projectContext(): Context
 {
     return new Context([
         'infraFolder' => __DIR__ . '/infra/',

@@ -18,16 +18,6 @@ COMPOSER = ${EXEC_DOCKER} composer
 help: ## Outputs this help screen
 	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
-## —— Docker ————————————————————————————————————————————————————————————
-up: down ## Docker container up (without build)
-	${DOCKER} compose up -d --build
-
-down: ## Docker container down
-	${DOCKER} compose down
-
-bash: ## Launch bash in the php container
-	${DOCKER} container exec -it ${PHP_CONTAINER} bash
-
 
 ## —— Install & deploy ————————————————————————————————————————————————————————————
 install: ## Install the composer dependencies from back to front
@@ -44,9 +34,4 @@ watch: ## watch for tailwind classes
 ts: ## watch for typescript changes
 	${CONSOLE} typescript:build --watch
 
-## —— Database ————————————————————————————————————————————————————————————
-migration: ## Create new migration based on the new entities
-	${CONSOLE} make:migration
 
-migrate: ## Push the migration to the DB
-	${CONSOLE} doctrine:migration:migrate

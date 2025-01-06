@@ -2,6 +2,8 @@
 
 namespace Castor\Services;
 
+use Castor\Context;
+use Symfony\Component\Process\Process;
 use function Castor\context;
 use function Castor\io;
 use function Castor\run;
@@ -12,7 +14,7 @@ class Docker
     /**
      * @param string[]|null $files
      */
-    public static function up(?array $files = null, bool $inBackground = true, bool $withBuild = false): void
+    public static function up(?array $files = null, bool $inBackground = true, bool $withBuild = false): Process
     {
         $commands = [];
 
@@ -34,14 +36,14 @@ class Docker
             $commands = array_merge($commands, ['--build']);
         }
 
-        self::compose($commands);
+        return self::compose($commands);
     }
 
 
     /**
      * @param string[]|null $files
      */
-    public static function down(?array $files = null): void
+    public static function down(?array $files = null): Process
     {
         $commands = [];
 
@@ -55,13 +57,13 @@ class Docker
 
         $commands = array_merge($commands, ['down']);
 
-        self::compose($commands);
+        return self::compose($commands);
     }
 
     /**
      * @param string[]|null $files
      */
-    public static function build(?array $files = null): void
+    public static function build(?array $files = null): Process
     {
         $commands = [];
 
@@ -75,38 +77,28 @@ class Docker
 
         $commands = array_merge($commands, ['build']);
 
-        self::compose($commands);
+        return self::compose($commands);
     }
 
     /**
      * @param string[] $commands
      */
-    public static function compose(array $commands = []): void
+    public static function compose(array $commands = []): Process
     {
-        $context = context()->withEnvironment([
-            'USER_ID' => variable("userId"),
-            'GROUP_ID' => variable("groupId")
-        ]);
-
         $compose_command = ['docker', 'compose'];
 
         $full_command = array_merge($compose_command, $commands);
 
-        run($full_command, context: $context);
+        return run($full_command, context: self::getDockerContext());
     }
 
-    public static function exec(array $arguments, ?string $containerName = null): void
+    public static function exec(array $arguments, ?string $containerName = null): Process
     {
-        $context = context()->withEnvironment([
-            'USER_ID' => variable("userId"),
-            'GROUP_ID' => variable("groupId")
-        ]);
-
         $exec_command = ['docker', 'container', 'exec', '-it', $containerName ?? variable('bashContainerName')];
 
         $full_command = array_merge($exec_command, $arguments);
 
-        run($full_command, context: $context);
+        return run($full_command, context: self::getDockerContext());
     }
 
     /**
@@ -115,5 +107,13 @@ class Docker
     private static function getDefaultFiles(): array
     {
         return [variable('infraFolder') . 'compose.yml'];
+    }
+
+    private static function getDockerContext(): Context
+    {
+        return context()->withEnvironment([
+            'USER_ID' => variable("userId"),
+            'GROUP_ID' => variable("groupId")
+        ]);
     }
 }
