@@ -3,11 +3,10 @@
 namespace App\Tests\Functional\Security;
 
 use App\DataFixtures\UserFixtures;
-use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Entity\Security\User;
+use App\Repository\Security\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class LoginControllerTest extends WebTestCase
 {

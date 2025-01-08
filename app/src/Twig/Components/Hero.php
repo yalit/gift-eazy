@@ -27,10 +27,10 @@ final class Hero extends AbstractController
     #[LiveProp(writable: true)]
     public string $subject = self::SUBJECT_SANTA_ORGANIZER;
 
-    /** @param string[] $available_verbs */
+    /** @var string[] $available_verbs */
     public array $available_verbs = [self::VERB_AM, self::VERB_WANT_TO_BE];
 
-    /** @param string[] $available_verbs */
+    /** @var string[] $available_subjects */
     public array $available_subjects = [self::SUBJECT_SANTA_ORGANIZER, self::SUBJECT_GIFTEE];
 
     #[LiveAction]
