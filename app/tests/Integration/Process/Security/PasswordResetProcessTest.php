@@ -126,6 +126,8 @@ class PasswordResetProcessTest extends KernelTestCase
 
         self::assertTrue($this->userPasswordHasher->isPasswordValid($user, self::NEW_PASSWORD));
         assertTrue($resetToken->isUsed());
+
+        // TODO : ensure email is sent to warn about the password change to the user
     }
 
     public function getPasswordReset(string $token, string $email, string $password): PasswordReset

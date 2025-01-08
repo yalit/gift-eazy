@@ -88,5 +88,8 @@ class PasswordResetRequestProcessTest extends KernelTestCase
         $newAllTokens = $this->passwordResetTokenRepository->findAll();
 
         self::assertCount(count($allTokens) + 1, $newAllTokens);
+
+        //TODO : ensure email is sent after request
     }
+
 }
