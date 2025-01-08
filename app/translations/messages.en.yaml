@@ -14,3 +14,18 @@ hero:
     giftee: a gift recipient
   call-to-action:
     go: GO
+
+pages:
+  security:
+    login:
+      title: "Log in!"
+    register:
+      title: "Register"
+
+    password_reset_request:
+      title: "Password Reset Request"
+      form:
+        submit: "Reset password"
+    password_reset_request_confirmed:
+      title: "Password Reset Request confirmation"
+      confirmation: "Thanks for the submission. A reset link has been sent to the email provided if connected to an account registered in the website."

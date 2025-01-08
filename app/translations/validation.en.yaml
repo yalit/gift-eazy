@@ -1,0 +1,3 @@
+validation:
+  security:
+    correct_token_and_email_for_password_reset: The token and the email are not matching

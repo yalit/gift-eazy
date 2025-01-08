@@ -60,5 +60,11 @@ function dbDrop(?string $env = null, bool $force = false): ?Process
         }
     }
 
-    return console(['doctrine:database:drop', '--force']);
+    $command = ['doctrine:database:drop', '--force'];
+
+    if (null !== $env) {
+        $command = array_merge($command, ['--env='.$env]);
+    }
+
+    return console($command);
 }
