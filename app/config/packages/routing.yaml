@@ -8,3 +8,13 @@ when@prod:
     framework:
         router:
             strict_requirements: null
+
+when@dev:
+    framework:
+        router:
+            default_uri: http://localhost:8080
+
+when@test:
+    framework:
+        router:
+            default_uri: http://localhost:8080

@@ -1,3 +1,7 @@
+main:
+  site:
+    name: Gift Eazy
+
 hero:
   h1:
     first: Sharing
@@ -29,3 +33,11 @@ pages:
     password_reset_request_confirmed:
       title: "Password Reset Request confirmation"
       confirmation: "Thanks for the submission. A reset link has been sent to the email provided if connected to an account registered in the website."
+
+mail:
+  security:
+    password_reset_request:
+      subject: "Gift-Eazy password reset request token link"
+      hero: Forgot your password
+      subtitle: It happens. Click below to reset your password.
+      not_visible: "If the button is not visible or you can't click on it, please copy-paste the following url in the your browser : %url%"

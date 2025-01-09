@@ -1,3 +1,15 @@
 framework:
     mailer:
         dsn: '%env(MAILER_DSN)%'
+
+when@dev:
+    framework:
+        mailer:
+            envelope:
+                recipients: ['dev_email@email.com']
+
+when@test:
+    framework:
+        mailer:
+            envelope:
+                recipients: ['test_email@email.com']
