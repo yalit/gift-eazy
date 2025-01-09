@@ -2,24 +2,33 @@
 
 namespace App\Tests\Integration\Process\Security;
 
+use App\Mail\HTMLEmailFactory;
 use App\Process\Security\PasswordResetRequest;
 use App\Process\Security\PasswordResetRequestProcess;
 use App\Repository\Security\PasswordResetTokenRepository;
 use App\Repository\Security\UserRepository;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PasswordResetRequestProcessTest extends KernelTestCase
 {
     private PasswordResetTokenRepository $passwordResetTokenRepository;
     private ValidatorInterface $validator;
     private UserRepository $userRepository;
+    private TranslatorInterface $translator;
+    private RouterInterface $router;
 
     protected function setUp(): void
     {
         $this->passwordResetTokenRepository = self::getContainer()->get(PasswordResetTokenRepository::class);
         $this->validator = static::getContainer()->get(ValidatorInterface::class);
         $this->userRepository = static::getContainer()->get(UserRepository::class);
+        $this->translator = static::getContainer()->get(TranslatorInterface::class);
+        $this->router = static::getContainer()->get(RouterInterface::class);
     }
 
     protected function tearDown(): void
@@ -27,6 +36,8 @@ class PasswordResetRequestProcessTest extends KernelTestCase
         unset($this->passwordResetTokenRepository);
         unset($this->validator);
         unset($this->userRepository);
+        unset($this->translator);
+        unset($this->router);
     }
 
     public function testCorrectPasswordResetRequestContent(): void
@@ -75,7 +86,12 @@ class PasswordResetRequestProcessTest extends KernelTestCase
 
     public function testSuccessfulPasswordResetRequest(): void
     {
-        $process = new PasswordResetRequestProcess($this->passwordResetTokenRepository);
+        $process = new PasswordResetRequestProcess(
+            $this->passwordResetTokenRepository,
+            self::getContainer()->get(HTMLEmailFactory::class),
+            self::getContainer()->get(MailerInterface::class),
+            "sender@notification.com"
+        );
 
         $email = "password_reset_request_test@email.com";
         $passwordResetRequest = new PasswordResetRequest();
@@ -86,10 +102,17 @@ class PasswordResetRequestProcessTest extends KernelTestCase
         $process($passwordResetRequest);
 
         $newAllTokens = $this->passwordResetTokenRepository->findAll();
-
         self::assertCount(count($allTokens) + 1, $newAllTokens);
 
-        //TODO : ensure email is sent after request
-    }
+        $resetToken = $this->passwordResetTokenRepository->findLastTokenForEmail($email);
+        self::assertNotNull($resetToken);
+        self::assertFalse($resetToken->isUsed());
+        self::assertGreaterThan( new DateTimeImmutable() ,$resetToken->getExpirationDate());
 
+        self::assertQueuedEmailCount(1);
+        $emailSent = self::getMailerMessage();
+        self::assertEmailSubjectContains($emailSent, $this->translator->trans('mail.security.password_reset_request.subject') );
+        self::assertEmailAddressContains($emailSent, "To",$email);
+        self::assertEmailHtmlBodyContains($emailSent, $this->router->generate('security_password_reset', ['token' => $resetToken->getToken()]));
+    }
 }

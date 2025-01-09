@@ -27,3 +27,15 @@ framework:
 
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
+
+when@dev:
+    framework:
+        messenger:
+            transports:
+                async: 'sync://'
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'sync://'
