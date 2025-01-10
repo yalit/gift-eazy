@@ -28,6 +28,7 @@ readonly class HTMLEmailFactory
         $email = new $mailClass();
         $email->from($sender)
             ->to($recipients)
+            ->context($parameters)
             ->initialize($this->translator, $parameters)
         ;
 

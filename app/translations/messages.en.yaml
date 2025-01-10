@@ -33,6 +33,13 @@ pages:
     password_reset_request_confirmed:
       title: "Password Reset Request confirmation"
       confirmation: "Thanks for the submission. A reset link has been sent to the email provided if connected to an account registered in the website."
+    link_to_login: Return to login page
+    password_reset:
+      title: Password reset
+      notification:
+        successful_reset: Thanks for the updating your password. You can now login again.
+      form:
+        submit: Reset your password
 
 mail:
   security:
@@ -41,3 +48,6 @@ mail:
       hero: Forgot your password
       subtitle: It happens. Click below to reset your password.
       not_visible: "If the button is not visible or you can't click on it, please copy-paste the following url in the your browser : %url%"
+    password_reset_notification:
+      subject: "Gift Eazy, password reset"
+      callout: Your password has just been reset on our platform.
