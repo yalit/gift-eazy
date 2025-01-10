@@ -27,6 +27,14 @@ class PasswordResetRequestControllerTest extends WebTestCase
         $this->resetRequestTokenRepository = $container->get(PasswordResetTokenRepository::class);
     }
 
+    protected function tearDown(): void
+    {
+        unset($this->client);
+        unset($this->userRepository);
+        unset($this->translator);
+        unset($this->resetRequestTokenRepository);
+    }
+
     public function testSuccessfulPasswordResetRequest(): void
     {
         $this->client->request('GET', '/password/reset/request');

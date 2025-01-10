@@ -3,14 +3,16 @@
 namespace App\Process\Security;
 
 use App\Process\SyncMessage;
-use App\Validation\Security\CorrectTokenAndEmailForPasswordReset;
+use App\Validation\Security\ValidPasswordResetToken;
+use App\Validation\Security\ValidTokenAndEmailPairingForPasswordReset;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 
-#[CorrectTokenAndEmailForPasswordReset]
+#[ValidTokenAndEmailPairingForPasswordReset]
 final class PasswordReset implements SyncMessage
 {
+    #[ValidPasswordResetToken]
     private string $token;
     private string $email;
     #[PasswordStrength]

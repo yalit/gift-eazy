@@ -33,6 +33,13 @@ pages:
     password_reset_request_confirmed:
       title: "Password Reset Request confirmation"
       confirmation: "Thanks for the submission. A reset link has been sent to the email provided if connected to an account registered in the website."
+      link_to_login: Return to login page
+    password_reset:
+      title: Password reset
+      notification:
+        successful_reset: Thanks for the updating your password. You can now login again.
+      form:
+        submit: Reset your password
 
 mail:
   security:

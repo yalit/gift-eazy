@@ -26,7 +26,7 @@ readonly class PasswordResetProcess
         $this->userRepository->upgradePassword($user, $this->userPasswordHasher->hashPassword($user, $passwordReset->getPlainPassword()));
 
         //set the token to used
-        $resetToken = $this->passwordResetTokenRepository->findTokenForEmail($passwordReset->getToken(), $passwordReset->getEmail());
+        $resetToken = $this->passwordResetTokenRepository->findTokenForEmailAndToken($passwordReset->getToken(), $passwordReset->getEmail());
         $resetToken->setUsed(true);
         $this->passwordResetTokenRepository->save($resetToken);
     }

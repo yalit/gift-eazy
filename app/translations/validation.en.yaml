@@ -1,3 +1,5 @@
 validation:
   security:
-    correct_token_and_email_for_password_reset: The token and the email are not matching
+    valid_token_and_email_pairing_for_password_reset: The token and the email are not matching
+    existing_user_email: The email is not existing in the database
+    valid_password_reset_token_for_password_reset: The token is invalid, you need to reset one

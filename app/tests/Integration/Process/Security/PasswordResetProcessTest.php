@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Process\Security;
 
+use App\DataFixtures\PasswordResetTokenFixtures;
 use App\Process\Security\PasswordReset;
 use App\Process\Security\PasswordResetProcess;
 use App\Repository\Security\PasswordResetTokenRepository;
@@ -42,7 +43,7 @@ class PasswordResetProcessTest extends KernelTestCase
         self::assertNotEmpty($users);
         $user = $users[0];
 
-        $resetToken = $this->passwordResetTokenRepository->findOneBy(['email' => $user->getEmail(), 'used' => false]);
+        $resetToken = $this->passwordResetTokenRepository->findLastTokenForEmail($user->getEmail());
         self::assertNotNull($resetToken);
 
         $passwordReset = $this->getPasswordReset($resetToken->getToken(), $resetToken->getEmail(), self::NEW_PASSWORD);
@@ -80,13 +81,13 @@ class PasswordResetProcessTest extends KernelTestCase
     /**
      * @dataProvider getIncorrectCombination
      */
-    public function testNotACorrectTokenEmailCombinationInPasswordReset(bool $correctToken, string $email, bool $used = false): void
+    public function testNotACorrectTokenEmailCombinationInPasswordReset(bool $correctToken, string $email): void
     {
         $users = $this->userRepository->findAll();
         self::assertNotEmpty($users);
         $user = $users[0];
 
-        $resetToken = $this->passwordResetTokenRepository->findOneBy(['email' => $user->getEmail(), 'used' => $used]);
+        $resetToken = $this->passwordResetTokenRepository->findOneBy(['email' => $user->getEmail(), 'used' => false]);
         self::assertNotNull($resetToken);
 
         $passwordReset = $this->getPasswordReset(
@@ -94,7 +95,7 @@ class PasswordResetProcessTest extends KernelTestCase
             $email === "user" ? $user->getEmail() : $email, self::NEW_PASSWORD);
         $violations = $this->validator->validate($passwordReset);
 
-        self::assertCount(1, $violations);
+        self::assertCount($correctToken ? 1 : 2, $violations); // Correct Pairing && ValidToken
     }
 
 
@@ -103,7 +104,6 @@ class PasswordResetProcessTest extends KernelTestCase
         yield "Correct Token and Empty email" => [true, ""];
         yield "Correct Token and Not an email" => [true, "test"];
         yield "Correct Token and incorrect email" => [true, "incorrect_email@email.com"];
-        yield "Correct Token and correct email and incorrect used status" => [true, "user", true];
         yield "Unknown Token" => [false, "user"];
     }
 

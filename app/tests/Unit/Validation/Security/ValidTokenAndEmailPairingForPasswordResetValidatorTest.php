@@ -6,13 +6,13 @@ use App\Entity\Security\Factory\PasswordResetRequestTokenFactory;
 use App\Entity\Security\PasswordResetToken;
 use App\Process\Security\PasswordReset;
 use App\Repository\Security\PasswordResetTokenRepository;
-use App\Validation\Security\CorrectTokenAndEmailForPasswordReset;
-use App\Validation\Security\CorrectTokenAndEmailForPasswordResetValidator;
+use App\Validation\Security\ValidTokenAndEmailPairingForPasswordReset;
+use App\Validation\Security\ValidTokenAndEmailPairingForPasswordResetValidator;
 use PHPUnit\Framework\MockObject\MockClass;
 use Symfony\Component\Validator\ConstraintValidatorInterface;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
-class CorrectTokenAndEmailForPasswordResetValidatorTest extends ConstraintValidatorTestCase
+class ValidTokenAndEmailPairingForPasswordResetValidatorTest extends ConstraintValidatorTestCase
 {
     private MockClass|PasswordResetTokenRepository $passwordResetTokenRepository;
 
@@ -21,7 +21,7 @@ class CorrectTokenAndEmailForPasswordResetValidatorTest extends ConstraintValida
         $resetToken = $this->getResetToken();
         $this->passwordResetTokenRepository
             ->expects($this->once())
-            ->method("findTokenForEmail")
+            ->method("findTokenForEmailAndToken")
             ->with($resetToken->getToken(), $resetToken->getEmail())
             ->willReturn($resetToken);
 
@@ -29,7 +29,7 @@ class CorrectTokenAndEmailForPasswordResetValidatorTest extends ConstraintValida
         $passwordReset->setToken($resetToken->getToken());
         $passwordReset->setEmail($resetToken->getEmail());
 
-        $this->validator->validate($passwordReset, new CorrectTokenAndEmailForPasswordReset());
+        $this->validator->validate($passwordReset, new ValidTokenAndEmailPairingForPasswordReset());
         $this->assertNoViolation();
     }
 
@@ -38,7 +38,7 @@ class CorrectTokenAndEmailForPasswordResetValidatorTest extends ConstraintValida
         $resetToken = $this->getResetToken();
         $this->passwordResetTokenRepository
             ->expects($this->once())
-            ->method("findTokenForEmail")
+            ->method("findTokenForEmailAndToken")
             ->with($resetToken->getToken(), $resetToken->getEmail())
             ->willReturn(null);
 
@@ -46,32 +46,15 @@ class CorrectTokenAndEmailForPasswordResetValidatorTest extends ConstraintValida
         $passwordReset->setToken($resetToken->getToken());
         $passwordReset->setEmail($resetToken->getEmail());
 
-        $this->validator->validate($passwordReset, new CorrectTokenAndEmailForPasswordReset());
-        $this->buildViolation((new CorrectTokenAndEmailForPasswordReset())->message)
+        $this->validator->validate($passwordReset, new ValidTokenAndEmailPairingForPasswordReset());
+        $this->buildViolation((new ValidTokenAndEmailPairingForPasswordReset())->message)
             ->assertRaised();
     }
 
-    public function testValidationErrorForConstraintValidatorWithUsedToken(): void
-    {
-        $resetToken = $this->getResetToken();
-        $this->passwordResetTokenRepository
-            ->expects($this->once())
-            ->method("findTokenForEmail")
-            ->with($resetToken->getToken(), $resetToken->getEmail())
-            ->willReturn((new PasswordResetToken())->setUsed(true));
-
-        $passwordReset = new PasswordReset();
-        $passwordReset->setToken($resetToken->getToken());
-        $passwordReset->setEmail($resetToken->getEmail());
-
-        $this->validator->validate($passwordReset, new CorrectTokenAndEmailForPasswordReset());
-        $this->buildViolation((new CorrectTokenAndEmailForPasswordReset())->message)
-            ->assertRaised();
-    }
     protected function createValidator(): ConstraintValidatorInterface
     {
         $this->passwordResetTokenRepository = $this->createMock(PasswordResetTokenRepository::class);
-        return new CorrectTokenAndEmailForPasswordResetValidator($this->passwordResetTokenRepository);
+        return new ValidTokenAndEmailPairingForPasswordResetValidator($this->passwordResetTokenRepository);
     }
 
     private function getResetToken(): PasswordResetToken

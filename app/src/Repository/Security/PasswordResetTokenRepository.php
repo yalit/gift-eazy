@@ -16,14 +16,22 @@ class PasswordResetTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, PasswordResetToken::class);
     }
 
-    public function findTokenForEmail(string $token, string $email): ?PasswordResetToken
+    /**
+     * Find the token that combines both the token and the email in input
+     * TODO : test it
+     */
+    public function findTokenForEmailAndToken(string $token, string $email): ?PasswordResetToken
     {
         return $this->findOneBy(['token' => $token, 'email' => $email]);
     }
 
+    /**
+     * Find the last token not used for the email in input
+     * TODO : test it
+     */
     public function findLastTokenForEmail(string $email): ?PasswordResetToken
     {
-        $tokens = $this->findBy(['email' => $email],['createdAt' => 'DESC']);
+        $tokens = $this->findBy(['email' => $email, 'used' => false],['createdAt' => 'DESC']);
 
         return count($tokens) > 0 ? $tokens[0] : null;
     }

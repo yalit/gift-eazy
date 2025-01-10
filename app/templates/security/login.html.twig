@@ -3,6 +3,11 @@
 {% block title %}{{ 'pages.security.login.title' | trans }}{% endblock %}
 
 {% block body %}
+    <div class="notifications">
+        {% for notification in app.flashes('notification') %}
+            <div class="notification">{{ notification | trans }}</div>
+        {% endfor %}
+    </div>
     <form method="post">
         {% if error %}
             <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -15,7 +20,7 @@
         <label for="password">Password</label>
         <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
 
-        <input type="hidden" name="_csrf_token"
+        <input type="hidden" name="_csrf_token" data-controller="csrf-protection"
                value="{{ csrf_token('authenticate') }}"
         >
 
@@ -32,5 +37,8 @@
         <button class="btn btn-lg btn-primary" type="submit">
             Sign in
         </button>
+        <div class="password-reset-request">
+            If you have forgotten, please click here <a href="{{ path("security_password_reset_request") }}">Password Reset Request</a>
+        </div>
     </form>
 {% endblock %}
