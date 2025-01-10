@@ -31,6 +31,7 @@ class PasswordResetProcessTest extends KernelTestCase
 
     protected function tearDown(): void
     {
+        parent::tearDown();
         unset($this->passwordResetTokenRepository);
         unset($this->userPasswordHasher);
         unset($this->userRepository);
@@ -70,6 +71,9 @@ class PasswordResetProcessTest extends KernelTestCase
         self::assertCount(1, $violations);
     }
 
+    /**
+     * @return iterable<string, array<string>>
+     */
     public function getNotStrongEnoughPasswords(): iterable
     {
         yield "Empty Password" => [""];
@@ -99,6 +103,9 @@ class PasswordResetProcessTest extends KernelTestCase
     }
 
 
+    /**
+     * @return iterable<string, array<bool|string>>
+     */
     public function getIncorrectCombination(): iterable
     {
         yield "Correct Token and Empty email" => [true, ""];

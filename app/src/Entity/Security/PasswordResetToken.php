@@ -24,11 +24,11 @@ class PasswordResetToken
     private ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 64, nullable: false)]
-    private ?string $token = null;
+    private string $token;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     #[GreaterThan('today')]
-    private ?\DateTimeImmutable $expiration_date = null;
+    private \DateTimeImmutable $expiration_date;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: false)]
     #[NotBlank]
@@ -52,7 +52,7 @@ class PasswordResetToken
         return $this->id;
     }
 
-    public function getToken(): ?string
+    public function getToken(): string
     {
         return $this->token;
     }
@@ -64,7 +64,7 @@ class PasswordResetToken
         return $this;
     }
 
-    public function getExpirationDate(): ?\DateTimeImmutable
+    public function getExpirationDate(): \DateTimeImmutable
     {
         return $this->expiration_date;
     }

@@ -33,6 +33,7 @@ class PasswordResetRequestProcessTest extends KernelTestCase
 
     protected function tearDown(): void
     {
+        parent::tearDown();
         unset($this->passwordResetTokenRepository);
         unset($this->validator);
         unset($this->userRepository);

@@ -29,6 +29,7 @@ class PasswordResetRequestControllerTest extends WebTestCase
 
     protected function tearDown(): void
     {
+        parent::tearDown();
         unset($this->client);
         unset($this->userRepository);
         unset($this->translator);

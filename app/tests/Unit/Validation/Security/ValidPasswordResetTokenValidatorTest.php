@@ -13,12 +13,16 @@ use App\Validation\Security\ValidPasswordResetTokenValidator;
 use DateInterval;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Validator\ConstraintValidatorInterface;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
+/**
+ * @template-extends ConstraintValidatorTestCase<ValidPasswordResetTokenValidator>
+ */
 class ValidPasswordResetTokenValidatorTest extends ConstraintValidatorTestCase
 {
-    private MockClass|PasswordResetTokenRepository $passwordResetTokenRepository;
+    private MockObject&PasswordResetTokenRepository $passwordResetTokenRepository;
 
     public function testNoValidationErrorForConstraintValidator(): void
     {

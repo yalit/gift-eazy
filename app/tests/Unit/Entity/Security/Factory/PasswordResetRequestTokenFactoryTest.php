@@ -16,13 +16,11 @@ class PasswordResetRequestTokenFactoryTest extends TestCase
         $email = "test@email.com";
 
         $token = $factory->create($email);
-        self::assertNotNull($token);
         self::assertEquals($email, $token->getEmail());
-        self::assertNotNull($token->getToken());
-        self::assertNotNull($token->getExpirationDate());
+        self::assertNotEquals("", $token->getToken());
+        self::assertGreaterThan(new DateTimeImmutable(), $token->getExpirationDate());
 
         self::assertLessThan((new DateTimeImmutable())->add(new DateInterval(sprintf("PT%dH", PasswordResetToken::EXPIRATION_HOURS))), $token->getExpirationDate());
-        self::assertNotNull($token->getCreatedAt());
         self::assertLessThanOrEqual(new DateTimeImmutable(), $token->getCreatedAt());
     }
 }

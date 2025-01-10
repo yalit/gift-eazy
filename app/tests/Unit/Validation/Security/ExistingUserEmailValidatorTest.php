@@ -13,12 +13,16 @@ use App\Validation\Security\ValidTokenAndEmailPairingForPasswordResetValidator;
 use App\Validation\Security\ExistingUserEmail;
 use App\Validation\Security\ExistingUserEmailValidator;
 use PHPUnit\Framework\MockObject\MockClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Validator\ConstraintValidatorInterface;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
+/**
+ * @template-extends ConstraintValidatorTestCase<ExistingUserEmailValidator>
+ */
 class ExistingUserEmailValidatorTest extends ConstraintValidatorTestCase
 {
-    private MockClass|UserRepository $userRepository;
+    private MockObject&UserRepository $userRepository;
 
     public function testNoValidationErrorForConstraintValidator(): void
     {

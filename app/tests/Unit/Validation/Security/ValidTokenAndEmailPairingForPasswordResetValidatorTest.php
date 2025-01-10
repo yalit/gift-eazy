@@ -8,13 +8,16 @@ use App\Process\Security\PasswordReset;
 use App\Repository\Security\PasswordResetTokenRepository;
 use App\Validation\Security\ValidTokenAndEmailPairingForPasswordReset;
 use App\Validation\Security\ValidTokenAndEmailPairingForPasswordResetValidator;
-use PHPUnit\Framework\MockObject\MockClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Validator\ConstraintValidatorInterface;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
+/**
+ * @template-extends ConstraintValidatorTestCase<ValidTokenAndEmailPairingForPasswordResetValidator>
+ */
 class ValidTokenAndEmailPairingForPasswordResetValidatorTest extends ConstraintValidatorTestCase
 {
-    private MockClass|PasswordResetTokenRepository $passwordResetTokenRepository;
+    private MockObject&PasswordResetTokenRepository $passwordResetTokenRepository;
 
     public function testNoValidationErrorForConstraintValidator(): void
     {
