@@ -11,11 +11,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PasswordResetRequestMail extends AppTemplatedEmail
 {
-    public function initialize(TranslatorInterface $translator, array $context): AppTemplatedEmail
+    public function initialize(TranslatorInterface $translator): AppTemplatedEmail
     {
         return $this->htmlTemplate('mail/security/password_reset_request.html.twig')
             ->subject($translator->trans('mail.security.password_reset_request.subject'))
-            ->context($context)
             ;
     }
 }
