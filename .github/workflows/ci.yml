@@ -47,6 +47,9 @@ jobs:
         run: composer install --prefer-dist --no-progress
         working-directory: ./app
 
+      - run: ls -la
+        working-directory: ./app
+        
       - name: Run phpstan validation
         run: ./vendor/bin/phpstan analyse --configuration=phpstan.neon
         working-directory: ./app
