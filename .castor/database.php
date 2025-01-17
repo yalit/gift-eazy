@@ -68,3 +68,11 @@ function dbDrop(?string $env = null, bool $force = false): ?Process
 
     return console($command);
 }
+
+#[AsTask(name: "db:fixtures", description: "Load the fixtures in the test environment")]
+function loadFixtures(string $env = "dev"): void
+{
+    io()->title(sprintf("Loading fixtures in %s environment", $env));
+
+    console(["doctrine:fixtures:load", sprintf("--env=%s", $env), "--no-interaction"]);
+}

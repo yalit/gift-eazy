@@ -60,9 +60,7 @@ function prepareTestEnvironment(): void
 }
 
 #[AsTask(name: "test:fixtures", description: "Load the fixtures in the test environment")]
-function loadFixtures(): void
+function test_loadFixtures(): void
 {
-    io()->title("Loading fixtures in test environment");
-
-    console(["doctrine:fixtures:load", "--env=test", "--no-interaction"]);
+    loadFixtures('test');
 }
