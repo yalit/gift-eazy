@@ -24,14 +24,10 @@ jobs:
     services:
       postgres:
         image: postgres:17-alpine
-        environment:
+        env:
           POSTGRES_DB: app
           POSTGRES_PASSWORD: app
           POSTGRES_USER: app
-        healthcheck:
-          test: [ "CMD", "pg_isready", "-d", "app", "-U", "app" ]
-          timeout: 5s
-          retries: 5
 
     steps:
       - uses: actions/checkout@v4
