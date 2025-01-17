@@ -21,24 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate --strict
-
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v3
+      - name: Run docker-compose
+        uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
-
-      - name: Install Composer dependencies
-        uses: php-actions/composer@master
-        with:
-          working_dir: ./app
-
-      - name: Run phpstan
-        uses: php-actions/phpstan@master
-        with:
-          configuration: ./phpstan.neon
+          compose-file: "./infra/compose.yml"
+          services: |
+            base
