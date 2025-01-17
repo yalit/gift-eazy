@@ -9,14 +9,14 @@ use DateTimeImmutable;
 final class EventFactory
 {
     public static function create(
-        string             $eventName,
-        string             $organizerEmail,
-        string             $organizerName = '',
+        string $eventName,
+        string $organizerEmail,
+        string $organizerName = '',
         ?DateTimeImmutable $date = null,
-        string             $description = '',
-        string             $theme = '',
-        EventStatus        $status = EventStatus::DRAFT,
-        int                $maximumAmount = 0
+        string $description = '',
+        string $theme = '',
+        EventStatus $status = EventStatus::DRAFT,
+        int $maximumAmount = 0
     ): Event {
         $event = new Event();
 

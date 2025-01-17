@@ -32,7 +32,7 @@ function phpcs(): void
 #[AsTask(name: "ci:phpcbf", description: "Runs phpcbf on the project codebase")]
 function phpcbf(): void
 {
-    io()->title("Running phpcs");
+    io()->title("Running phpcbf");
 
     Docker::exec(['vendor/bin/phpcbf']);
 }
@@ -46,6 +46,4 @@ function ci_all():void
     phpstan();
 
     phpcs();
-
-    phpcbf();
 }
