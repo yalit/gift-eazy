@@ -19,6 +19,7 @@ jobs:
         working-directory: ./app
     env:
       DATABASE_URL: "postgresql://app:app@localhost:5432/app?serverVersion=17&charset=utf8"
+      MAILER_DSN: "smtp://localhost:1025"
     strategy:
       matrix:
         php-versions: ['8.2', '8.3', '8.4']
@@ -39,6 +40,13 @@ jobs:
         ports:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
+      mailer:
+        image: axllent/mailpit
+        ports:
+          - 1025:1025
+        env:
+          MP_SMTP_AUTH_ACCEPT_ANY: 1
+          MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
     steps:
       - uses: actions/checkout@v4
