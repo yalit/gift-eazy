@@ -29,7 +29,7 @@ readonly class HTMLEmailFactory
         $email->from($sender)
             ->to($recipients)
             ->context($parameters)
-            ->initialize($this->translator, $parameters)
+            ->initialize($this->translator)
         ;
 
 
