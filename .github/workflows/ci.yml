@@ -48,5 +48,5 @@ jobs:
         working-directory: ./app
 
       - name: Run phpstan validation
-        run: vendor/bin/phpstan analyse
+        run: ./vendor/bin/phpstan analyse --configuration=phpstan.neon
         working-directory: ./app
