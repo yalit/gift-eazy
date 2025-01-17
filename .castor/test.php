@@ -53,7 +53,7 @@ function prepareTestEnvironment(): void
     dbCreate('test');
 
     // push migrations to test db
-    dbMigrate('test');
+    dbMigrate('test', true);
 
     // load fixtures
     loadFixtures();

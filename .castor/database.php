@@ -20,7 +20,7 @@ function createMigration(?string $env = null): void
 }
 
 #[AsTask(name:"db:migrate", description:"Push the migration to the DB")]
-function dbMigrate(?string $env = null): void
+function dbMigrate(?string $env = null, bool $force = false): void
 {
     io()->title("Generates new migration");
 
@@ -28,6 +28,10 @@ function dbMigrate(?string $env = null): void
 
     if (null !== $env) {
         $command = array_merge($command, ['--env='.$env]);
+    }
+
+    if ($force) {
+        $command = array_merge($command, ['--no-interaction']);
     }
 
     console($command);
