@@ -27,3 +27,6 @@ jobs:
           compose-file: "./infra/compose.yml"
           services: |
             base
+        env:
+          USER_ID: 1000
+          GROUP_ID: 1000
