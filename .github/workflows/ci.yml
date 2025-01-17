@@ -37,6 +37,7 @@ jobs:
 
       - name: Run phpstan
         uses: php-actions/phpstan@master
+        working-direction: ./app
         with:
           configuration: ./phpstan.neon
           php_version: '8.2'
