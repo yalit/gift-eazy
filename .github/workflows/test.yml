@@ -84,6 +84,9 @@ jobs:
       - name: Run integration tests
         run: ./bin/phpunit --testdox --testsuite integration
 
+      - name: Build tailwind assets
+        run: bin/console tailwind:build
+
       - name: Build typescript assets
         run: bin/console typescript:build
 
