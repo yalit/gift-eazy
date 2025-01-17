@@ -14,6 +14,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['8.2', '8.3', '8.4']
     defaults:
       run:
         working-directory: ./app
@@ -21,12 +24,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run docker-compose
-        uses: hoverkraft-tech/compose-action@v2.0.1
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
         with:
-          compose-file: "./infra/compose.yml"
-          services: |
-            base
-        env:
-          USER_ID: 1000
-          GROUP_ID: 1000
+          php-version: ${{ matrix.php-versions }}
+          extensions:  bz2, intl, pcntl, sodium, zip, xsl, gd, pdo_pgsql, pdo
+          
+      - name: Validate Composer dependencies
+        uses: php-actions/composer@v6
+        with:
+          command: validate
+          args: --strict
+        
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+        
+      - name: Install Composer dependencies
+        uses: php-actions/composer@v6
+        with:
+          args: --prefer-dist --no-progress
