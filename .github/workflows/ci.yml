@@ -1,0 +1,140 @@
+name: PHP Composer
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+
+permissions:
+  contents: read
+
+
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['8.2', '8.3', '8.4']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Adding app folder as safe
+        run: git config --global --add safe.directory /app
+
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions:  bz2, intl, pcntl, sodium, zip, xsl, gd, pdo_pgsql, pdo
+          
+      - name: Validate Composer dependencies
+        uses: php-actions/composer@v6
+        with:
+          command: validate
+          args: --strict
+          working_dir: ./app
+        
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+        
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+        working-directory: ./app
+
+      - name: Run phpstan validation
+        run: ./vendor/bin/phpstan analyse
+        working-directory: ./app
+
+      - name: Run phpcs verification
+        run: ./vendor/bin/phpcs -n
+        working-directory: ./app
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
+    env:
+      DATABASE_URL: "postgresql://app:app@localhost:5432/app?serverVersion=17&charset=utf8"
+      MAILER_DSN: "smtp://localhost:1025"
+    strategy:
+      matrix:
+        php-versions: ['8.2', '8.3', '8.4']
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_USER: app
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+      mailer:
+        image: axllent/mailpit
+        ports:
+          - 1025:1025
+        env:
+          MP_SMTP_AUTH_ACCEPT_ANY: 1
+          MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Adding app folder as safe
+        run: git config --global --add safe.directory /app
+
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions:  bz2, intl, pcntl, sodium, zip, xsl, gd, pdo_pgsql, pdo, pdo_sqlite
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Create test database
+        run: bin/console doctrine:database:create --env=test
+
+      - name: Run the migrations on test database
+        run: bin/console doctrine:migrations:migrate --env=test --no-interaction
+
+      - name: Load the fixtures in the test database
+        run: bin/console doctrine:fixtures:load --env=test --no-interaction
+
+      - name: Run unit tests
+        run: ./bin/phpunit --testdox --testsuite unit
+
+      - name: Run integration tests
+        run: ./bin/phpunit --testdox --testsuite integration
+
+      - name: Build tailwind assets
+        run: bin/console tailwind:build
+
+      - name: Build typescript assets
+        run: bin/console typescript:build
+
+      - name: Build asset mapper assets
+        run: bin/console asset-map:compile
+
+      - name: Run functional tests
+        run: ./bin/phpunit --testdox --testsuite functional

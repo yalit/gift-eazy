@@ -22,14 +22,13 @@ readonly class HTMLEmailFactory
         string|array $sender,
         string|array $recipients,
         array $parameters
-    ): AppTemplatedEmail
-    {
+    ): AppTemplatedEmail {
         /** @var AppTemplatedEmail $email */
         $email = new $mailClass();
         $email->from($sender)
             ->to($recipients)
             ->context($parameters)
-            ->initialize($this->translator, $parameters)
+            ->initialize($this->translator)
         ;
 
 

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Process\Security;
+
 use App\Entity\Security\Factory\PasswordResetRequestTokenFactory;
 use App\Mail\HTMLEmailFactory;
 use App\Mail\Security\PasswordResetRequestMail;

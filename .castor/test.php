@@ -7,12 +7,40 @@ use function Castor\io;
 use function Castor\run;
 
 #[AsTask(name:'test:all', description: "Run all the test available")]
-function tests(): void
+function tests(string $testSuite = ""): void
 {
-    io()->title("Running full test suite");
+    if ($testSuite === "") {
+        io()->title("Running full test suite");
+    } else {
+        io()->title(sprintf("Running %s test suite", $testSuite));
+    }
 
-    Docker::exec(['bin/phpunit', "--testdox"]);
+    $command = ['bin/phpunit', "--testdox"];
 
+    if ($testSuite !== "") {
+        $command = array_merge($command, ['--testsuite', $testSuite]);
+    }
+
+    Docker::exec($command);
+
+}
+
+#[AsTask(name:'test:unit', description: "Run unit tests")]
+function test_unit(): void
+{
+    tests("unit");
+}
+
+#[AsTask(name:'test:integration', description: "Run unit tests")]
+function test_integration(): void
+{
+    tests("integration");
+}
+
+#[AsTask(name:'test:functional', description: "Run unit tests")]
+function test_functional(): void
+{
+    tests("functional");
 }
 
 #[AsTask(name: "test:prepare", description: "Prepare the test environment")]

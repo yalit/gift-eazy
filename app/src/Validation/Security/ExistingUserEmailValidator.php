@@ -13,7 +13,8 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 class ExistingUserEmailValidator extends ConstraintValidator
 {
     public function __construct(private readonly UserRepository $userRepository)
-    {}
+    {
+    }
 
     public function validate(mixed $value, Constraint $constraint): void
     {

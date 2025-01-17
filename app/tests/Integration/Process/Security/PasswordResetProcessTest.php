@@ -14,6 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+
 use function PHPUnit\Framework\assertTrue;
 
 class PasswordResetProcessTest extends KernelTestCase
@@ -102,7 +103,9 @@ class PasswordResetProcessTest extends KernelTestCase
 
         $passwordReset = $this->getPasswordReset(
             $correctToken ? $resetToken->getToken() : Uuid::v4(),
-            $email === "user" ? $user->getEmail() : $email, self::NEW_PASSWORD);
+            $email === "user" ? $user->getEmail() : $email,
+            self::NEW_PASSWORD
+        );
         $violations = $this->validator->validate($passwordReset);
 
         self::assertCount($correctToken ? 1 : 2, $violations); // Correct Pairing && ValidToken
@@ -149,7 +152,7 @@ class PasswordResetProcessTest extends KernelTestCase
 
         self::assertQueuedEmailCount(1);
         $emailSent = self::getMailerMessage();
-        self::assertEmailSubjectContains($emailSent, $this->translator->trans('mail.security.password_reset_notification.subject') );
+        self::assertEmailSubjectContains($emailSent, $this->translator->trans('mail.security.password_reset_notification.subject'));
     }
 
     public function getPasswordReset(string $token, string $email, string $password): PasswordReset

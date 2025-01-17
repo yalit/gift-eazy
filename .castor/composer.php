@@ -27,3 +27,12 @@ function composer_install(): void
 
     Docker::exec($command);
 }
+
+#[AsTask(name:"composer:update", description: "Update the composer modules")]
+function composer_update(): void
+{
+    io()->text("Updating all composers dependencies");
+    $command = ['composer', 'update'];
+
+    Docker::exec($command);
+}

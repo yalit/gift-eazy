@@ -108,12 +108,12 @@ class PasswordResetRequestProcessTest extends KernelTestCase
         $resetToken = $this->passwordResetTokenRepository->findLastTokenForEmail($email);
         self::assertNotNull($resetToken);
         self::assertFalse($resetToken->isUsed());
-        self::assertGreaterThan( new DateTimeImmutable() ,$resetToken->getExpirationDate());
+        self::assertGreaterThan(new DateTimeImmutable(), $resetToken->getExpirationDate());
 
         self::assertQueuedEmailCount(1);
         $emailSent = self::getMailerMessage();
-        self::assertEmailSubjectContains($emailSent, $this->translator->trans('mail.security.password_reset_request.subject') );
-        self::assertEmailAddressContains($emailSent, "To",$email);
+        self::assertEmailSubjectContains($emailSent, $this->translator->trans('mail.security.password_reset_request.subject'));
+        self::assertEmailAddressContains($emailSent, "To", $email);
         self::assertEmailHtmlBodyContains($emailSent, $this->router->generate('security_password_reset', ['token' => $resetToken->getToken()]));
     }
 }

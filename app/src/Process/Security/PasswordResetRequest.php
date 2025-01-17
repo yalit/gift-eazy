@@ -14,9 +14,9 @@ class PasswordResetRequest implements SyncMessage
     #[NotBlank]
     private string $email;
 
-    public function __construct(
-    )
-    {}
+    public function __construct()
+    {
+    }
 
     public function getEmail(): string
     {

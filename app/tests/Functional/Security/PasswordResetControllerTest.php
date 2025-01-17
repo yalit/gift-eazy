@@ -50,10 +50,10 @@ class PasswordResetControllerTest extends WebTestCase
         $resetToken = $this->resetRequestTokenRepository->findLastTokenForEmail(UserFixtures::FIRST_USER_EMAIL);
         self::assertNotNull($resetToken);
 
-        $this->client->request('GET', '/password/reset/'.$resetToken->getToken());
+        $this->client->request('GET', '/password/reset/' . $resetToken->getToken());
         self::assertResponseIsSuccessful();
 
-        $newPassword  ="New_Password123!";
+        $newPassword  = "New_Password123!";
         self::assertFalse($this->userPasswordHasher->isPasswordValid($user, $newPassword));
 
         $this->client->submitForm($this->translator->trans('pages.security.password_reset.form.submit'), [
@@ -91,7 +91,7 @@ class PasswordResetControllerTest extends WebTestCase
         self::assertNotCount(0, $usedTokens);
         $usedToken = $usedTokens[0];
 
-        $this->client->request('GET', '/password/reset/'.$usedToken->getToken());
+        $this->client->request('GET', '/password/reset/' . $usedToken->getToken());
         self::assertResponseRedirects('/login');
         $this->client->followRedirect();
         self::assertResponseIsSuccessful();
@@ -106,7 +106,7 @@ class PasswordResetControllerTest extends WebTestCase
         self::assertNotCount(0, $expiredTokens);
         $expiredToken = $expiredTokens[0];
 
-        $this->client->request('GET', '/password/reset/'.$expiredToken->getToken());
+        $this->client->request('GET', '/password/reset/' . $expiredToken->getToken());
         self::assertResponseRedirects('/login');
         $this->client->followRedirect();
         self::assertResponseIsSuccessful();

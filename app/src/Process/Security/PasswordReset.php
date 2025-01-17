@@ -19,7 +19,8 @@ final class PasswordReset implements SyncMessage
     private string $plainPassword;
 
     public function __construct()
-    {}
+    {
+    }
 
     public function getPlainPassword(): string
     {

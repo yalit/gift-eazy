@@ -31,7 +31,7 @@ class PasswordResetTokenRepository extends ServiceEntityRepository
      */
     public function findLastTokenForEmail(string $email): ?PasswordResetToken
     {
-        $tokens = $this->findBy(['email' => $email, 'used' => false],['createdAt' => 'DESC']);
+        $tokens = $this->findBy(['email' => $email, 'used' => false], ['createdAt' => 'DESC']);
 
         return count($tokens) > 0 ? $tokens[0] : null;
     }

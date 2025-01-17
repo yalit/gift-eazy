@@ -13,13 +13,14 @@ use Symfony\UX\LiveComponent\DefaultActionTrait;
 #[AsLiveComponent]
 final class Hero extends AbstractController
 {
+    use DefaultActionTrait;
+
     private const VERB_AM = "hero.verb.am";
     private const VERB_WANT_TO_BE = "hero.verb.want_to_be";
 
     private const SUBJECT_SANTA_ORGANIZER = "hero.subject.santa";
     private const SUBJECT_GIFTEE = "hero.subject.giftee";
 
-    use DefaultActionTrait;
 
     #[LiveProp(writable: true)]
     public string $verb = self::VERB_WANT_TO_BE;
