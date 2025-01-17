@@ -14,7 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 readonly class PasswordResetProcess
 {
     public function __construct(
-        private UserRepository              $userRepository,
+        private UserRepository $userRepository,
         private UserPasswordHasherInterface $userPasswordHasher,
         private PasswordResetTokenRepository $passwordResetTokenRepository,
         private HTMLEmailFactory $HTMLEmailFactory,

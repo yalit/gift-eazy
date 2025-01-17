@@ -12,7 +12,8 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 class ValidTokenAndEmailPairingForPasswordResetValidator extends ConstraintValidator
 {
     public function __construct(private readonly PasswordResetTokenRepository $resetRequestTokenRepository)
-    {}
+    {
+    }
 
     public function validate(mixed $value, Constraint $constraint): void
     {

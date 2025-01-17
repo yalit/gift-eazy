@@ -22,8 +22,7 @@ readonly class HTMLEmailFactory
         string|array $sender,
         string|array $recipients,
         array $parameters
-    ): AppTemplatedEmail
-    {
+    ): AppTemplatedEmail {
         /** @var AppTemplatedEmail $email */
         $email = new $mailClass();
         $email->from($sender)

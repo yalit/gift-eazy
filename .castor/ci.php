@@ -21,3 +21,18 @@ function composer(): void
     Docker::exec(['composer', 'validate', '--strict']);
 }
 
+#[AsTask(name: "ci:phpcs", description: "Runs phpcs on the project codebase")]
+function phpcs(): void
+{
+    io()->title("Running phpcs");
+
+    Docker::exec(['vendor/bin/phpcs']);
+}
+
+#[AsTask(name: "ci:phpcbf", description: "Runs phpcbf on the project codebase")]
+function phpcbf(): void
+{
+    io()->title("Running phpcs");
+
+    Docker::exec(['vendor/bin/phpcbf']);
+}
