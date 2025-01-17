@@ -17,9 +17,9 @@ jobs:
     defaults:
       run:
         working-directory: ./app
-      env:
-        DATABASE_URL="postgresql://app:app@localhost:5432/app?serverVersion=17&charset=utf8"
-      strategy:
+    env:
+      DATABASE_URL: "postgresql://app:app@localhost:5432/app?serverVersion=17&charset=utf8"
+    strategy:
       matrix:
         php-versions: ['8.2', '8.3', '8.4']
 
@@ -30,15 +30,15 @@ jobs:
           POSTGRES_DB: app
           POSTGRES_PASSWORD: app
           POSTGRES_USER: app
-          # Set health checks to wait until postgres has started
-          options: >-
-            --health-cmd pg_isready
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
-          ports:
-            # Maps tcp port 5432 on service container to the host
-            - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
 
     steps:
       - uses: actions/checkout@v4
