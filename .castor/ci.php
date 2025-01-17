@@ -12,3 +12,12 @@ function phpstan(): void
 
     Docker::exec(['vendor/bin/phpstan', 'analyse']);
 }
+
+#[AsTask(name: "ci:composer", description: "Runs Composer validation")]
+function composer(): void
+{
+    io()->title("Running Composer validation");
+
+    Docker::exec(['composer', 'validate', '--strict']);
+}
+
