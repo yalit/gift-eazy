@@ -36,7 +36,7 @@ jobs:
       - name: Install Composer dependencies
         uses: php-actions/composer@master
         with:
-          working-dir: ./app
+          working_dir: ./app
 
       - name: Run phpstan
         uses: php-actions/phpstan@master
