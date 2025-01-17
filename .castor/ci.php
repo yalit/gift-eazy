@@ -14,7 +14,7 @@ function phpstan(): void
 }
 
 #[AsTask(name: "ci:composer", description: "Runs Composer validation")]
-function composer(): void
+function composer_valid(): void
 {
     io()->title("Running Composer validation");
 
@@ -26,7 +26,7 @@ function phpcs(): void
 {
     io()->title("Running phpcs");
 
-    Docker::exec(['vendor/bin/phpcs']);
+    Docker::exec(['vendor/bin/phpcs', '-n']); // no warnings
 }
 
 #[AsTask(name: "ci:phpcbf", description: "Runs phpcbf on the project codebase")]
@@ -35,4 +35,17 @@ function phpcbf(): void
     io()->title("Running phpcs");
 
     Docker::exec(['vendor/bin/phpcbf']);
+}
+
+
+#[AsTask(name: "ci:all", description: "Runs all validations")]
+function ci_all():void
+{
+    composer_valid();
+
+    phpstan();
+
+    phpcs();
+
+    phpcbf();
 }

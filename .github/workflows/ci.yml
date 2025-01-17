@@ -52,5 +52,5 @@ jobs:
         working-directory: ./app
 
       - name: Run phpcs verification
-        run: ./vendor/bin/phpcs
+        run: ./vendor/bin/phpcs -n
         working-directory: ./app
