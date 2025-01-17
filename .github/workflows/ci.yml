@@ -50,3 +50,7 @@ jobs:
       - name: Run phpstan validation
         run: ./vendor/bin/phpstan analyse
         working-directory: ./app
+
+      - name: Run phpcs verification
+        run: ./vendor/bin/phpcs
+        working-directory: ./app
