@@ -2,6 +2,7 @@ twig:
     file_name_pattern: '*.twig'
     paths:
         '%kernel.project_dir%/assets/styles': styles
+    form_themes: ['tailwind_2_layout.html.twig']
 
 when@test:
     twig:

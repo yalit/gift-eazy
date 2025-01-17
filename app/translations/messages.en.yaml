@@ -40,6 +40,8 @@ pages:
         successful_reset: Thanks for the updating your password. You can now login again.
       form:
         submit: Reset your password
+  event_creation:
+    title: Event creation
 
 mail:
   security:
