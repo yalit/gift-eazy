@@ -33,8 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+      - uses: php-actions/composer@master
 
       - name: Run phpstan
         uses: php-actions/phpstan@master
