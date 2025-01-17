@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Adding app folder as safe
-        run: git config --global --add safe.directory ./app
+        run: git config --global --add safe.directory /app
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
@@ -35,7 +35,7 @@ jobs:
         with:
           command: validate
           args: --strict
-          working_dir: ./app
+          working_dir: /app
         
       - name: Cache Composer dependencies
         uses: actions/cache@v3
@@ -47,5 +47,5 @@ jobs:
         uses: php-actions/composer@v6
         with:
           args: --prefer-dist --no-progress
-          working_dir: ./app
+          working_dir: /app
           
