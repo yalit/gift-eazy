@@ -15,7 +15,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
-      working-directory: ./app
+      run:
+        working-directory: ./app
     strategy:
       matrix:
         php-versions: ['8.2', '8.3', '8.4']
