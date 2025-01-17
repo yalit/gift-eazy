@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Event;
 
 use App\Enum\EventStatus;
 use App\Repository\EventRepository;
@@ -13,23 +13,32 @@ class Event
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $name = '';
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private DateTimeImmutable $date;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private string $organizerEmail = '';
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $organizerName = null;
 
-    #[ORM\Column(length: 255, enumType: EventStatus::class)]
+    #[ORM\Column(type: Types::STRING, length: 255, enumType: EventStatus::class)]
     private EventStatus $status = EventStatus::DRAFT;
+
+    #[ORM\Column(type: Types::STRING, length: 255)]
+    private string $theme = '';
+
+    #[ORM\Column(type: Types::TEXT)]
+    private string $description = '';
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $maximumAmount = 0;
 
     public function __construct()
     {
@@ -99,5 +108,35 @@ class Event
         $this->status = $status;
 
         return $this;
+    }
+
+    public function getTheme(): string
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(string $theme): void
+    {
+        $this->theme = $theme;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function getMaximumAmount(): int
+    {
+        return $this->maximumAmount;
+    }
+
+    public function setMaximumAmount(int $maximumAmount): void
+    {
+        $this->maximumAmount = $maximumAmount;
     }
 }
