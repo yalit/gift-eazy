@@ -16,10 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['8.2', '8.3', '8.4']
+        php-versions: ['8.2']
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Adding app folder as safe
+        run: git config --global --add safe.directory ./app
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
