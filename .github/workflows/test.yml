@@ -84,5 +84,11 @@ jobs:
       - name: Run integration tests
         run: ./bin/phpunit --testdox --testsuite integration
 
+      - name: Build typescript assets
+        run: bin/console typescript:build
+
+      - name: Build asset mapper assets
+        run: bin/console asset-map:compile
+
       - name: Run functional tests
         run: ./bin/phpunit --testdox --testsuite functional
