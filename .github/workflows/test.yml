@@ -12,11 +12,25 @@ permissions:
 
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    defaults:
+      working-director: ./app
     strategy:
       matrix:
         php-versions: ['8.2', '8.3', '8.4']
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        environment:
+          POSTGRES_DB: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_USER: app
+        healthcheck:
+          test: [ "CMD", "pg_isready", "-d", "app", "-U", "app" ]
+          timeout: 5s
+          retries: 5
 
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +42,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions:  bz2, intl, pcntl, sodium, zip, xsl, gd, pdo_pgsql, pdo
+          extensions:  bz2, intl, pcntl, sodium, zip, xsl, gd, pdo_pgsql, pdo, pdo_sqlite
           
       - name: Cache Composer dependencies
         uses: actions/cache@v3
@@ -38,16 +52,21 @@ jobs:
         
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
-        working-directory: ./app
+
+      - name: Create test database
+        run: bin/console doctrine:database:create --env=test
+
+      - name: Run the migrations on test database
+        run: bin/console doctrine:migrations:migrate --env=test --no-interaction
+
+      - name: Load the fixtures in the test database
+        run: bin/console doctrine:fixtures:load --env=test --no-interaction
 
       - name: Run unit tests
         run: ./bin/phpunit --testdox --testsuite unit
-        working-directory: ./app
 
       - name: Run integration tests
         run: ./bin/phpunit --testdox --testsuite integration
-        working-directory: ./app
 
       - name: Run functional tests
         run: ./bin/phpunit --testdox --testsuite functional
-        working-directory: ./app
