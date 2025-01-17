@@ -40,5 +40,3 @@ jobs:
         uses: php-actions/phpstan@master
         with:
           configuration: ./phpstan.neon
-          php_version: '8.2'
-          working-directory: ./app
