@@ -42,6 +42,8 @@ pages:
         submit: Reset your password
   event_creation:
     title: Event creation
+    form:
+      submit: Create new Event
 
 mail:
   security:
