@@ -5,6 +5,8 @@ namespace App\Entity\Event;
 use App\Enum\EventStatus;
 use App\Repository\EventRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -57,9 +59,16 @@ class Event
     #[ORM\Column(type: Types::INTEGER)]
     private int $maximumAmount = 0;
 
+    /**
+     * @var ArrayCollection<EventParticipant>
+     */
+    #[ORM\OneToMany(targetEntity: EventParticipant::class, mappedBy: 'event', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $participants;
+
     public function __construct()
     {
         $this->date = new DateTimeImmutable();
+        $this->participants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -171,6 +180,33 @@ class Event
     public function setToken(string $token): static
     {
         $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection<EventParticipant>
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipant(EventParticipant $participant): static
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants->add($participant);
+            $participant->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipant(EventParticipant $participant): static
+    {
+        if ($this->participants->contains($participant)) {
+            $this->participants->removeElement($participant);
+        }
 
         return $this;
     }

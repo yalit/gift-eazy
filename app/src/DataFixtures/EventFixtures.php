@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Event\Factory\EventFactory;
+use App\Entity\Event\Factory\EventParticipantFactory;
 use App\Enum\EventStatus;
 use App\Process\Event\EventCreation;
 use DateTimeImmutable;
@@ -31,6 +32,11 @@ class EventFixtures extends Fixture
             );
             $event = EventFactory::createFromDTO($DTO);
             $event->setStatus($status);
+
+            // add between 4 and 15 participants
+            for ($i = 0; $i < $faker->numberBetween(4, 15); $i++) {
+                $event->addParticipant(EventParticipantFactory::create($faker->name(), $faker->email()));
+            }
             $manager->persist($event);
         }
 
@@ -47,6 +53,11 @@ class EventFixtures extends Fixture
             );
             $event = EventFactory::createFromDTO($DTO);
             $event->setStatus($status);
+            // add between 4 and 15 participants
+            for ($i = 0; $i < $faker->numberBetween(4, 15); $i++) {
+                $event->addParticipant(EventParticipantFactory::create($faker->name(), $faker->email()));
+            }
+
             $manager->persist($event);
         }
         $manager->flush();
