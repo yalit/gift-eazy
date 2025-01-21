@@ -3,7 +3,7 @@
 namespace App\Process\Event;
 
 use App\Entity\Event\Factory\EventFactory;
-use App\Repository\EventRepository;
+use App\Repository\Event\EventRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

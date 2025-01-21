@@ -3,7 +3,7 @@
 namespace App\Entity\Event;
 
 use App\Enum\EventStatus;
-use App\Repository\EventRepository;
+use App\Repository\Event\EventRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -60,7 +60,7 @@ class Event
     private int $maximumAmount = 0;
 
     /**
-     * @var ArrayCollection<EventParticipant>
+     * @var ArrayCollection<array-key,EventParticipant> $participants
      */
     #[ORM\OneToMany(targetEntity: EventParticipant::class, mappedBy: 'event', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $participants;
@@ -185,7 +185,7 @@ class Event
     }
 
     /**
-     * @return ArrayCollection<EventParticipant>
+     * @return ArrayCollection<array-key, EventParticipant>
      */
     public function getParticipants(): Collection
     {

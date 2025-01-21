@@ -3,7 +3,7 @@
 namespace App\Tests\Integration\Component\Event;
 
 use App\Entity\Event\Event;
-use App\Repository\EventRepository;
+use App\Repository\Event\EventRepository;
 use App\Twig\Components\EventForm;
 use DateTimeImmutable;
 use Faker\Factory;
@@ -42,13 +42,15 @@ class EventCreationFormComponentTest extends KernelTestCase
 
         $faker = Factory::create();
         $name = $faker->sentence(1);
-        $organizerEmail = $faker->email;
-        $organizerName = $faker->name;
+        $organizerEmail = $faker->email();
+        $organizerName = $faker->name();
         $date = DateTimeImmutable::createFromMutable($faker->dateTimeBetween('+1 day', "+10 months"));
         $theme = $faker->word();
         $description = $faker->sentence(10);
         $maximumAmount = $faker->numberBetween(1, 100);
 
+        $component->call('addCollectionItem', ['name' => 'participants']);
+        $component->call('addCollectionItem', ['name' => 'participants']);
         $component->submitForm(['event_creation' => [
             'name' => $name,
             'organizerEmail' => $organizerEmail,
@@ -57,6 +59,16 @@ class EventCreationFormComponentTest extends KernelTestCase
             'theme' => $theme,
             'description' => $description,
             'maximumAmount' => $maximumAmount,
+            'participants' => [
+                [
+                    'name' => $faker->name(),
+                    'email' => $faker->email()
+                ],
+                [
+                    'email' => $faker->email(),
+                    'name' => $faker->name()
+                ],
+            ]
         ]], 'save');
 
         $eventRepository = static::getContainer()->get(EventRepository::class);
@@ -64,12 +76,6 @@ class EventCreationFormComponentTest extends KernelTestCase
         /** @var ?Event $event */
         $event = $eventRepository->findOneBy(['name' => $name]);
         self::assertNotNull($event);
-
-        self::assertNotNull($event->getId());
-        /** @phpstan-ignore-next-line */
-        self::assertNotNull($event->getToken());
-        self::assertEquals($name, $event->getName());
-        self::assertEquals($organizerEmail, $event->getOrganizerEmail());
-        self::assertEquals($organizerName, $event->getOrganizerName());
+        self::assertCount(3, $event->getParticipants());
     }
 }

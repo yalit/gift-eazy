@@ -20,6 +20,13 @@ final class EventFactory
         $event->setMaximumAmount($DTO->maximumAmount);
         $event->setToken(Uuid::v4()->toString());
 
+        // add the organizer as a participant as well
+        $event->addParticipant(EventParticipantFactory::create($DTO->organizerName, $DTO->organizerEmail));
+
+        foreach ($DTO->participants as $participant) {
+            $event->addParticipant(EventParticipantFactory::create($participant->name, $participant->email));
+        }
+
         return $event;
     }
 }

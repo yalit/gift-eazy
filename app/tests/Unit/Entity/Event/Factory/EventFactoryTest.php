@@ -16,9 +16,9 @@ class EventFactoryTest extends TestCase
         $faker = Factory::create();
         $eventCreationDTO = new EventCreation();
         $eventCreationDTO->name = $faker->sentence(1);
-        $eventCreationDTO->organizerName = $faker->name;
-        $eventCreationDTO->organizerEmail = $faker->email;
-        $eventCreationDTO->description = $faker->text;
+        $eventCreationDTO->organizerName = $faker->name();
+        $eventCreationDTO->organizerEmail = $faker->email();
+        $eventCreationDTO->description = $faker->text();
         $eventCreationDTO->date = DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months'));
         $eventCreationDTO->maximumAmount = 100;
 

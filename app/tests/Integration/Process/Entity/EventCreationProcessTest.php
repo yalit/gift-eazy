@@ -2,29 +2,14 @@
 
 namespace App\Tests\Integration\Process\Entity;
 
-use App\Entity\Event\Factory\EventFactory;
-use App\Mail\HTMLEmailFactory;
+use App\Entity\Event\DTO\EventParticipantInputDTO;
 use App\Process\Event\EventCreation;
-use App\Process\Event\EventCreationProcess;
-use App\Process\Security\PasswordReset;
-use App\Process\Security\PasswordResetProcess;
-use App\Repository\EventRepository;
-use App\Repository\Security\PasswordResetTokenRepository;
-use App\Repository\Security\UserRepository;
+use App\Repository\Event\EventRepository;
 use DateTimeImmutable;
-use Exception;
 use Faker\Factory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Exception\ValidationFailedException;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
-
-use function PHPUnit\Framework\assertEquals;
-use function PHPUnit\Framework\assertTrue;
 
 class EventCreationProcessTest extends KernelTestCase
 {
@@ -52,9 +37,13 @@ class EventCreationProcessTest extends KernelTestCase
             $faker->email(),
             $faker->name(),
             $faker->word(),
-            $faker->text,
+            $faker->text(),
             DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
-            $faker->numberBetween(10, 250)
+            $faker->numberBetween(10, 250),
+            [
+                ['name' => $faker->name(), 'email' => $faker->email()],
+                ['name' => $faker->name(), 'email' => $faker->email()],
+            ]
         );
 
         $this->messageBus->dispatch($eventCreation);
@@ -70,6 +59,19 @@ class EventCreationProcessTest extends KernelTestCase
         self::assertEquals($eventCreation->description, $createdEvent->getDescription());
         self::assertEquals($eventCreation->date, $createdEvent->getDate());
         self::assertEquals($eventCreation->maximumAmount, $createdEvent->getMaximumAmount());
+
+        self::assertCount(3, $createdEvent->getParticipants());
+        foreach ($createdEvent->getParticipants() as $participant) {
+            if (!($participant->getName() === $eventCreation->organizerName && $participant->getEmail() === $eventCreation->organizerEmail)) {
+                self::assertCount(1, $eventCreation->participants->filter(function (EventParticipantInputDTO $eventParticipant) use ($participant) {
+                    return $participant->getEmail() === $eventParticipant->email && $participant->getName() === $eventParticipant->name;
+                }));
+            } else {
+                self::assertEquals($eventCreation->organizerName, $participant->getName());
+                self::assertEquals($eventCreation->organizerEmail, $participant->getEmail());
+            }
+            self::assertNotNull($participant->getToken());
+        }
     }
 
     /**
@@ -93,9 +95,13 @@ class EventCreationProcessTest extends KernelTestCase
                 $faker->email(),
                 $faker->name(),
                 $faker->word(),
-                $faker->text,
+                $faker->text(),
                 DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
-                $faker->numberBetween(10, 250)
+                $faker->numberBetween(10, 250),
+                [
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                ]
             )
         ];
         yield "Blank Name" => [
@@ -104,9 +110,13 @@ class EventCreationProcessTest extends KernelTestCase
                 $faker->email(),
                 $faker->name(),
                 $faker->word(),
-                $faker->text,
+                $faker->text(),
                 DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
-                $faker->numberBetween(10, 250)
+                $faker->numberBetween(10, 250),
+                [
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                ]
             )
         ];
         yield "No Organizer email" => [
@@ -115,9 +125,13 @@ class EventCreationProcessTest extends KernelTestCase
                 null,
                 $faker->name(),
                 $faker->word(),
-                $faker->text,
+                $faker->text(),
                 DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
-                $faker->numberBetween(10, 250)
+                $faker->numberBetween(10, 250),
+                [
+                ['name' => $faker->name(), 'email' => $faker->email()],
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                ]
             )
         ];
         yield "Blank Organizer email" => [
@@ -126,9 +140,13 @@ class EventCreationProcessTest extends KernelTestCase
                 "",
                 $faker->name(),
                 $faker->word(),
-                $faker->text,
+                $faker->text(),
                 DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
-                $faker->numberBetween(10, 250)
+                $faker->numberBetween(10, 250),
+                [
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                ]
             )
         ];
         yield "Organizer incorrect email" => [
@@ -137,9 +155,13 @@ class EventCreationProcessTest extends KernelTestCase
                 $faker->name(),
                 $faker->name(),
                 $faker->word(),
-                $faker->text,
+                $faker->text(),
                 DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
-                $faker->numberBetween(10, 250)
+                $faker->numberBetween(10, 250),
+                [
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                ]
             )
         ];
         yield "Date in the past" => [
@@ -148,9 +170,13 @@ class EventCreationProcessTest extends KernelTestCase
                 $faker->email(),
                 $faker->name(),
                 $faker->word(),
-                $faker->text,
+                $faker->text(),
                 DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 month', '-1 day')),
-                $faker->numberBetween(10, 250)
+                $faker->numberBetween(10, 250),
+                [
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                ]
             )
         ];
         yield "Negative maximum amount" => [
@@ -159,13 +185,34 @@ class EventCreationProcessTest extends KernelTestCase
                 $faker->email(),
                 $faker->name(),
                 $faker->word(),
-                $faker->text,
+                $faker->text(),
                 DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
-                $faker->numberBetween(-110, -1)
+                $faker->numberBetween(-110, -1),
+                [
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                ]
+            )
+        ];
+        yield "Insufficient number of participants" => [
+            $this->getEventCreation(
+                $faker->sentence(1),
+                $faker->email(),
+                $faker->name(),
+                $faker->word(),
+                $faker->text(),
+                DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
+                $faker->numberBetween(10, 100),
+                [
+                    ['name' => $faker->name(), 'email' => $faker->email()],
+                ]
             )
         ];
     }
 
+    /**
+     * @param array<int, array{name: string, email: string}> $participants
+     */
     public function getEventCreation(
         ?string $name = null,
         ?string $organizerEmail = null,
@@ -174,6 +221,7 @@ class EventCreationProcessTest extends KernelTestCase
         ?string $description = null,
         DateTimeImmutable $date = new DateTimeImmutable(),
         int $maximumAmount = 0,
+        array $participants = [],
     ): EventCreation {
         $eventCreation = new EventCreation();
 
@@ -184,6 +232,12 @@ class EventCreationProcessTest extends KernelTestCase
         $eventCreation->description = $description;
         $eventCreation->date = $date;
         $eventCreation->maximumAmount = $maximumAmount;
+        foreach ($participants as $participant) {
+            $eventParticipantDTO = new EventParticipantInputDTO();
+            $eventParticipantDTO->name = $participant['name'];
+            $eventParticipantDTO->email = $participant['email'];
+            $eventCreation->addParticipant($eventParticipantDTO);
+        }
 
         return $eventCreation;
     }

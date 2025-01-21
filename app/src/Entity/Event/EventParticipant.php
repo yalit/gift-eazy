@@ -2,9 +2,7 @@
 
 namespace App\Entity\Event;
 
-use App\Repository\EventParticipantRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Repository\Event\EventParticipantRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\Email;
@@ -30,12 +28,13 @@ class EventParticipant
     #[Email]
     private string $email;
 
-    #[ORM\Column(type: Types::STRING ,length: 255, nullable: false)]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false)]
     #[NotBlank]
     #[NotNull]
     private string $token;
 
     #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'participants')]
+    #[ORM\JoinColumn(nullable: false)]
     private Event $event;
 
     public function getId(): ?int

@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\UX\LiveComponent\Form\Type\LiveCollectionType;
 
 /**
  * @extends AbstractType<EventCreation>
@@ -29,6 +30,12 @@ class EventCreationType extends AbstractType
             ->add('theme', TextType::class)
             ->add('description', TextareaType::class)
             ->add('maximumAmount', IntegerType::class)
+            ->add('participants', LiveCollectionType::class, [
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'entry_type' => EventParticipantType::class,
+            ])
         ;
     }
 

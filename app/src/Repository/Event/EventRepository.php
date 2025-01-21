@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Event;
 
 use App\Entity\Event\Event;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

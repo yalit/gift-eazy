@@ -12,6 +12,8 @@
     {{ form_row(form.theme) }}
     {{ form_row(form.description) }}
     {{ form_row(form.maximumAmount) }}
+    {{ form_row(form.participants) }}
+    {{ form_errors(form.participants) }}
     <button>{{ 'pages.event_creation.form.submit' | trans }}</button>
     {{ form_end(form) }}
 </div>
