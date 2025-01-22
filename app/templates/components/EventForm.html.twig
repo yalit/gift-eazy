@@ -1,0 +1,19 @@
+<div{{ attributes }}>
+    {{ form_start(form, {
+        attr: {
+            'data-action': 'live#action:prevent',
+            'data-live-action-param': 'save'
+        }
+    }) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.organizerName) }}
+    {{ form_row(form.organizerEmail) }}
+    {{ form_row(form.date) }}
+    {{ form_row(form.theme) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.maximumAmount) }}
+    {{ form_row(form.participants) }}
+    {{ form_errors(form.participants) }}
+    <button>{{ 'pages.event_creation.form.submit' | trans }}</button>
+    {{ form_end(form) }}
+</div>

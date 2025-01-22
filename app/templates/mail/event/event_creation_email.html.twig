@@ -1,0 +1,17 @@
+{% apply inky_to_html | inline_css(source('@styles/foundation-email.css'),source('@styles/mail.css')) %}
+    <container>
+
+        <spacer size="16"></spacer>
+
+        <row>
+            <columns>
+
+                <h2>Hi, </h2>
+                <p>{{ 'mail.event.creation.body' | trans }}</p>
+
+                <p>Event créé : {{ name }}</p>
+                <a href="{{ targetUrl }}">{{ targetUrl }}</a>
+            </columns>
+        </row>
+    </container>
+{% endapply %}

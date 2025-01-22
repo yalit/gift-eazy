@@ -6,5 +6,3 @@ import './bootstrap.ts';
  * which should already be in your base.html.twig.
  */
 import './styles/app.css';
-
-console.log("Hello from app.ts")

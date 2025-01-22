@@ -29,7 +29,7 @@ function phpcs(): void
     Docker::exec(['vendor/bin/phpcs', '-n']); // no warnings
 }
 
-#[AsTask(name: "ci:phpcbf", description: "Runs phpcbf on the project codebase")]
+#[AsTask(name: "ci:fix", description: "Runs phpcbf on the project codebase")]
 function phpcbf(): void
 {
     io()->title("Running phpcbf");

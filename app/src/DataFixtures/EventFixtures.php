@@ -2,12 +2,12 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Event\Event;
 use App\Entity\Event\Factory\EventFactory;
+use App\Entity\Event\Factory\EventParticipantFactory;
 use App\Enum\EventStatus;
+use App\Process\Event\EventCreation;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
 
@@ -21,35 +21,67 @@ class EventFixtures extends Fixture
 
         // for registered user
         foreach (EventStatus::cases() as $status) {
-            $manager->persist(
-                EventFactory::create(
-                    $faker->sentence(2),
-                    UserFixtures::FIRST_USER_EMAIL,
-                    organizerName: $faker->name(),
-                    date: DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+2 months')),
-                    description: $faker->text(),
-                    theme: $faker->sentence(1),
-                    status: $status,
-                    maximumAmount: $faker->numberBetween(10, 250),
-                )
+            $DTO = $this->getCreationDTO(
+                $faker->sentence(2),
+                UserFixtures::FIRST_USER_EMAIL,
+                organizerName: $faker->name(),
+                date: DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+2 months')),
+                description: $faker->text(),
+                theme: $faker->sentence(1),
+                maximumAmount: $faker->numberBetween(10, 250),
             );
+            $event = EventFactory::createFromDTO($DTO);
+            $event->setStatus($status);
+
+            // add between 4 and 15 participants
+            for ($i = 0; $i < $faker->numberBetween(4, 15); $i++) {
+                $event->addParticipant(EventParticipantFactory::create($faker->name(), $faker->email()));
+            }
+            $manager->persist($event);
         }
 
         // for non-registered user
         foreach (EventStatus::cases() as $status) {
-            $manager->persist(
-                EventFactory::create(
-                    $faker->sentence(2),
-                    self::NON_REGISTERED_USER_EMAIL,
-                    organizerName: $faker->name(),
-                    date: DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+2 months')),
-                    description: $faker->text(),
-                    theme: $faker->sentence(1),
-                    status: $status,
-                    maximumAmount: $faker->numberBetween(10, 250),
-                )
+            $DTO = $this->getCreationDTO(
+                $faker->sentence(2),
+                self::NON_REGISTERED_USER_EMAIL,
+                organizerName: $faker->name(),
+                date: DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+2 months')),
+                description: $faker->text(),
+                theme: $faker->sentence(1),
+                maximumAmount: $faker->numberBetween(10, 250),
             );
+            $event = EventFactory::createFromDTO($DTO);
+            $event->setStatus($status);
+            // add between 4 and 15 participants
+            for ($i = 0; $i < $faker->numberBetween(4, 15); $i++) {
+                $event->addParticipant(EventParticipantFactory::create($faker->name(), $faker->email()));
+            }
+
+            $manager->persist($event);
         }
         $manager->flush();
+    }
+
+    private function getCreationDTO(
+        string $eventName,
+        string $organizerEmail,
+        string $organizerName = '',
+        ?DateTimeImmutable $date = null,
+        string $description = '',
+        string $theme = '',
+        int $maximumAmount = 0
+    ): EventCreation {
+        $DTO = new EventCreation();
+
+        $DTO->name = $eventName;
+        $DTO->organizerEmail = $organizerEmail;
+        $DTO->organizerName = $organizerName;
+        $DTO->date = $date;
+        $DTO->description = $description;
+        $DTO->theme = $theme;
+        $DTO->maximumAmount = $maximumAmount;
+
+        return $DTO;
     }
 }

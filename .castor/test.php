@@ -25,6 +25,14 @@ function tests(string $testSuite = ""): void
 
 }
 
+#[AsTask(name: 'test:filter', description: "Run test filtering on input")]
+function tests_filter(string $filter = ''): void
+{
+    io()->title(sprintf("Running filtered test with %s", $filter));
+    $command = ['bin/phpunit', "--filter", $filter, '--testdox'];
+    Docker::exec($command);
+}
+
 #[AsTask(name:'test:unit', description: "Run unit tests")]
 function test_unit(): void
 {

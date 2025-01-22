@@ -21,7 +21,7 @@ readonly class HTMLEmailFactory
         string $mailClass,
         string|array $sender,
         string|array $recipients,
-        array $parameters
+        array $parameters = []
     ): AppTemplatedEmail {
         /** @var AppTemplatedEmail $email */
         $email = new $mailClass();
