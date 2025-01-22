@@ -55,6 +55,10 @@ mail:
     password_reset_notification:
       subject: "Gift Eazy, password reset"
       callout: Your password has just been reset on our platform.
+  event:
+    creation:
+      subject : "Gift-Eazy - %name% event creation"
+      body: TODO - to add content
 
 
 event:

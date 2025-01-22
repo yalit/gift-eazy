@@ -15,4 +15,10 @@ final class AnonymousEventCRUDController extends EventCRUDController
     {
         return $this->internalCreation($request);
     }
+
+    #[Route('/update/{token}', name: 'event_update_anonymous', methods: ['GET', 'POST'])]
+    public function update(Request $request, string $token): Response
+    {
+        return $this->internalUpdate($request, $token);
+    }
 }

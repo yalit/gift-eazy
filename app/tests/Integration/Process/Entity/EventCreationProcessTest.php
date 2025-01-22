@@ -10,16 +10,19 @@ use Faker\Factory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Messenger\Exception\ValidationFailedException;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventCreationProcessTest extends KernelTestCase
 {
     private EventRepository $eventRepository;
     private MessageBusInterface $messageBus;
+    private TranslatorInterface $translator;
 
     protected function setUp(): void
     {
         $this->eventRepository = self::getContainer()->get(EventRepository::class);
         $this->messageBus = self::getContainer()->get(MessageBusInterface::class);
+        $this->translator = self::getContainer()->get(TranslatorInterface::class);
     }
 
     protected function tearDown(): void
@@ -27,6 +30,7 @@ class EventCreationProcessTest extends KernelTestCase
         parent::tearDown();
         unset($this->eventRepository);
         unset($this->messageBus);
+        unset($this->translator);
     }
 
     public function testCorrectEventCreation(): void
@@ -72,6 +76,12 @@ class EventCreationProcessTest extends KernelTestCase
             }
             self::assertNotNull($participant->getToken());
         }
+
+        self::assertQueuedEmailCount(1);
+        $emailSent = self::getMailerMessage();
+        self::assertEmailSubjectContains($emailSent, $this->translator->trans('mail.event.creation.subject', ['%name%' => $eventCreation->name]));
+        self::assertEmailHtmlBodyContains($emailSent, $createdEvent->getName());
+        self::assertEmailHtmlBodyContains($emailSent, $createdEvent->getToken());
     }
 
     /**
@@ -129,7 +139,7 @@ class EventCreationProcessTest extends KernelTestCase
                 DateTimeImmutable::createFromMutable($faker->dateTimeInInterval('now', '+10 months')),
                 $faker->numberBetween(10, 250),
                 [
-                ['name' => $faker->name(), 'email' => $faker->email()],
+                    ['name' => $faker->name(), 'email' => $faker->email()],
                     ['name' => $faker->name(), 'email' => $faker->email()],
                 ]
             )

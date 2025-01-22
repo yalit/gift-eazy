@@ -12,4 +12,9 @@ abstract class EventCRUDController extends AbstractController
     {
         return $this->render('event/creation.html.twig');
     }
+
+    public function internalUpdate(Request $request, string $token): Response
+    {
+        return new Response(sprintf("Hello world and event edition for %s", $token));
+    }
 }
