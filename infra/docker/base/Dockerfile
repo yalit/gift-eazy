@@ -1,4 +1,4 @@
-FROM php:8-apache as php
+FROM php:8-apache as base
 
 ARG USER_ID
 ARG GROUP_ID
@@ -28,5 +28,17 @@ COPY php.ini /usr/local/etc/php/conf.d/app.ini
 COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY apache.conf /etc/apache2/conf-available/app.conf
 RUN a2enconf app
+
+USER user
+
+FROM base as dev
+
+USER root
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
+RUN mkdir -p docker/php/conf.d
+COPY xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY error_reporting.ini /usr/local/etc/php/conf.d/error_reporting.ini
 
 USER user
